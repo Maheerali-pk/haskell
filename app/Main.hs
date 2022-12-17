@@ -6,6 +6,7 @@ module Main where
 
 import Data.Bifunctor (Bifunctor)
 import Data.List (elemIndex, transpose)
+import Data.List.NonEmpty (xor)
 import Data.Maybe (fromJust, fromMaybe)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Graphics.Gloss
@@ -137,7 +138,7 @@ initialIntBoard =
     replicate 8 (-1)
   ]
     ++ replicate 4 (replicate 8 (-1))
-    ++ map2d (+ 6) [replicate 8 (-7), [2, 4, 3, 1, 0, 3, 4, 2]]
+    ++ map2d (+ 6) [replicate 8 (7), [2, 4, 3, 1, 0, 3, 4, 2]]
 
 getPieceColor :: (Ord a, Num a) => a -> PieceColor
 getPieceColor n = if n < 6 then White else Black
@@ -371,3 +372,17 @@ main :: IO ()
 main = do
   piecePictures <- sequence loadPieceImages
   play window (makeColor 1 0 0 1) 10000 (initialState {piecePictures = piecePictures}) (\s -> draw s s) transform (const id)
+
+makePairs :: Integral a => [a] -> a -> Int
+makePairs arr a = length $ filter (\t -> t `rem` a == 0) $ concat $ [map (\t -> t + (arr !! i)) $ take i arr | i <- [0 .. (length arr - 1)]]
+
+
+
+
+
+solve = do
+  l1 <- getLine
+  l2 <- getLine
+  let [_, k] = (map read $ words l1) :: [Int]
+  let elms = (map read $ words l2) :: [Int]
+  print $ makePairs elms k
